@@ -1,0 +1,1 @@
+My solution to assignment 3 of the course "Aerial Robotics" in courserea, imparted by professor Vijay Kumar of Penn University. Note that I only developed the code for the controller and trajectory generator.
