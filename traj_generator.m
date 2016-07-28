@@ -29,33 +29,32 @@ function [ desired_state ] = traj_generator(t, state, waypoints)
 % using a constant velocity of 0.5 m/s. Note that this is only a sample, and you
 % should write your own trajectory generator for the submission.
 
-persistent waypoints0 traj_time d0
-if nargin > 2
-    d = waypoints(:,2:end) - waypoints(:,1:end-1);
-    d0 = 2 * sqrt(d(1,:).^2 + d(2,:).^2 + d(3,:).^2);
-    traj_time = [0, cumsum(d0)];
-    waypoints0 = waypoints;
-else
-    if(t > traj_time(end))
-        t = traj_time(end);
-    end
-    t_index = find(traj_time >= t,1);
-
-    if(t_index > 1)
-        t = t - traj_time(t_index-1);
-    end
-    if(t == 0)
-        desired_state.pos = waypoints0(:,1);
-    else
-        scale = t/d0(t_index-1);
-        desired_state.pos = (1 - scale) * waypoints0(:,t_index-1) + scale * waypoints0(:,t_index);
-    end
-    desired_state.vel = zeros(3,1);
-    desired_state.acc = zeros(3,1);
-    desired_state.yaw = 0;
-    desired_state.yawdot = 0;
-end
-%
+% persistent waypoints0 traj_time d0
+% if nargin > 2   %Initialisation
+%     d = waypoints(:,2:end) - waypoints(:,1:end-1);
+%     d0 = 2 * sqrt(d(1,:).^2 + d(2,:).^2 + d(3,:).^2);   %distance per segment
+%     traj_time = [0, cumsum(d0)];
+%     waypoints0 = waypoints;
+% else        %Simulation time
+%     if(t > traj_time(end))
+%         t = traj_time(end);
+%     end
+%     t_index = find(traj_time >= t,1);   %find the index of the closest tabulated trajectory time corresponding to the current time
+%     if(t_index > 1) %Exception for the first time point
+%         t = t - traj_time(t_index-1);
+%     end         
+%     if(t == 0)  %Exception for time=0
+%         desired_state.pos = waypoints0(:,1);
+%     else    %For any other time, make a scalar progression between points
+%         scale = t/d0(t_index-1);
+%         desired_state.pos = (1 - scale) * waypoints0(:,t_index-1) + scale * waypoints0(:,t_index);
+%     end
+%     desired_state.vel = zeros(3,1);
+%     desired_state.acc = zeros(3,1);
+%     desired_state.yaw = 0;
+%     desired_state.yawdot = 0;
+% end
+% 
 
 
 %% Fill in your code here
@@ -64,5 +63,86 @@ end
 % desired_state.vel = zeros(3,1);
 % desired_state.acc = zeros(3,1);
 % desired_state.yaw = 0;
+
+
+persistent waypoints0 traj_time d0
+if nargin > 2   %Initialisation
+    d = waypoints(:,2:end) - waypoints(:,1:end-1);
+    d0 = 2 * sqrt(d(1,:).^2 + d(2,:).^2 + d(3,:).^2);   %distance per segment
+    traj_time = [0, cumsum(d0)];
+    waypoints0 = waypoints;
+    
+    [Cx,Cy,Cz]=computeCoefs(waypoints0,d0);
+    
+else        %Simulation time
+    if(t > traj_time(end))
+        t = traj_time(end);
+    end
+    t_index = find(traj_time >= t,1);   %find the index of the closest tabulated trajectory time corresponding to the current time
+    if(t_index > 1) %Exception for the first time point
+        t = t - traj_time(t_index-1);
+    end         
+    if(t == 0)  %Exception for time=0
+        desired_state.pos = waypoints0(:,1);
+    else    %For any other time, make a scalar progression between points
+        scale = t/d0(t_index-1);
+        desired_state.pos = (1 - scale) * waypoints0(:,t_index-1) + scale * waypoints0(:,t_index);
+    end
+    desired_state.vel = zeros(3,1);
+    desired_state.acc = zeros(3,1);
+    desired_state.yaw = 0;
+    desired_state.yawdot = 0;
 end
+end
+
+%%Functions
+function [Cx,Cy,Cz]=computeCoefs(w,d0)
+%computes the coefficients for the polynomials that defines the trajectory.
+%The problem to solve is A*Coeffs=b, where A contains the constraints, b
+%contains the waypoints and Coeffs is the matrix of coefficients. It must
+%be taken into account that it has to be solved for x, y and z.
+
+n=size(w,1)-1; %Number of polynomials -1
+
+%initialise matrixes:
+b=zeros(3,8*n); %dimension is 3x8 coz we have to solve for x,y and z and for a snap trajectory (8 coefficients per polinomial)
+A=zeros(3,8*n,8*n);
+
+b=w;
+
+%Construction of A
+
+
+for i=1:3
+    for j=1:n
+        
+        %position constraint: P(t=0)
+        A(i,j,((j-1)*8)+1:j*8) = polynom(8,0,0);
+        
+        
+        
+        
+        
+end
+
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
