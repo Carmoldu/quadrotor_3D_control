@@ -17,7 +17,6 @@ waypoints = [0    0   0;
              4    0   0]';
 trajhandle([],[],waypoints);
 
-
 %% controller
 controlhandle = @controller;
 

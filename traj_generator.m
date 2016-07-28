@@ -70,6 +70,11 @@ if nargin > 2   %Initialisation
     Cy=computeCoefs(waypoints0(2,:));
     Cz=computeCoefs(waypoints0(3,:));
     
+    for i=1:size(waypoints0,2)
+        plot3(waypoints0(1,i),waypoints0(2,i),waypoints0(3,i),'g*')
+        hold on
+    end
+    
 else        %Simulation time
     if(t > traj_time(end))
         t = traj_time(end);

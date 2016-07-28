@@ -21,7 +21,7 @@ params = sys_params;
 
 %% **************************** FIGURES *****************************
 disp('Initializing figures...');
-h_fig = figure;
+% h_fig = figure;
 h_3d = gca;
 axis equal
 grid on
@@ -52,6 +52,8 @@ x       = x0;        % state
 
 pos_tol = 0.01;
 vel_tol = 0.01;
+
+
 
 %% ************************* RUN SIMULATION *************************
 disp('Simulation Running....');
